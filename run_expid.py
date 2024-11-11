@@ -40,15 +40,35 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 if __name__ == '__main__':
     ''' Usage: python run_expid.py --config {config_dir} --expid {experiment_id} --gpu {gpu_device_id}
     '''
+    # Set the current working directory to the directory of this script
+    os.chdir(os.path.dirname(os.path.realpath(__file__)))
+
+    # Get the base directory where the script is located
+    base_dir = os.path.dirname(os.path.realpath(__file__))
+
+    # Define data paths based on base_dir
+    data_root = os.path.join(base_dir, 'data', 'final')
+    train_data_path = os.path.join(data_root, 'train_data_final.csv')
+    valid_data_path = os.path.join(data_root, 'valid_data_final.csv')
+    test_data_path = os.path.join(data_root, 'test_data_final.csv')
+
+    # Load configuration
     parser = argparse.ArgumentParser()
     parser.add_argument('--config', type=str, default='./config/', help='The config directory.')
     parser.add_argument('--expid', type=str, default='DeepFM_test', help='The experiment id to run.')
     parser.add_argument('--gpu', type=int, default=-1, help='The gpu index, -1 for cpu')
     args = vars(parser.parse_args())
-    
+
     experiment_id = args['expid']
     params = load_config(args['config'], experiment_id)
     params['gpu'] = args['gpu']
+
+    # Update params with absolute paths
+    params['data_root'] = data_root
+    params['train_data'] = train_data_path
+    params['valid_data'] = valid_data_path
+    params['test_data'] = test_data_path
+
     set_logger(params)
     logging.info("Params: " + print_to_json(params))
     seed_everything(seed=params['seed'])
