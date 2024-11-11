@@ -104,7 +104,7 @@ test_data[dense_feature] = mms.transform(test_data[dense_feature])
 train_data_full = pd.concat([train_data, valid_data], axis=0).reset_index(drop=True)
 
 # Save data
-dataset_name = 'final'
+dataset_name = '/kaggle/working/recs_challenge_2023/data/final'
 if not os.path.exists(dataset_name):
     os.mkdir(dataset_name)
 
