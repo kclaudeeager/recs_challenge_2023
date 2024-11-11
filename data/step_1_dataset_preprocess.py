@@ -48,13 +48,16 @@ valid_na = valid_data[valid_data['f_30'].isna()]
 test_na = test_data[test_data['f_30'].isna()]
 
 train_not_na = train_data[~train_data['f_30'].isna()]
-X_train = train_not_na.drop(['f_30', 'f_31'], axis=1)
+
+# Define features to use for training (excluding 'f_30' and 'f_31')
+feature_columns = [col for col in train_data.columns if col not in ['f_30', 'f_31']]
+
+X_train = train_not_na[feature_columns]
 y_train = train_not_na[['f_30', 'f_31']]
 
-# Remove the drop operation for these columns as they don't exist anymore
-X_train_na = train_na
-X_valid_na = valid_na
-X_test_na = test_na
+X_train_na = train_na[feature_columns]
+X_valid_na = valid_na[feature_columns]
+X_test_na = test_na[feature_columns]
 
 gbm1 = lgb.LGBMClassifier(objective='binary',
                           metric='auc',
@@ -63,9 +66,9 @@ gbm1 = lgb.LGBMClassifier(objective='binary',
                           max_depth=3,
                           num_leaves=7, verbose=3)
 gbm1.fit(X_train, y_train.f_30)
-X_train_na['f_30'] = gbm1.predict(X_train_na)
-X_valid_na['f_30'] = gbm1.predict(X_valid_na)
-X_test_na['f_30'] = gbm1.predict(X_test_na)
+train_na['f_30'] = gbm1.predict(X_train_na)
+valid_na['f_30'] = gbm1.predict(X_valid_na)
+test_na['f_30'] = gbm1.predict(X_test_na)
 
 gbm2 = lgb.LGBMClassifier(objective='binary',
                           metric='auc',
@@ -75,9 +78,9 @@ gbm2 = lgb.LGBMClassifier(objective='binary',
                           num_leaves=7, verbose=3)
 gbm2.fit(X_train, y_train.f_31)
 
-X_train_na['f_31'] = gbm2.predict(X_train_na.drop(['f_30'], axis=1))
-X_valid_na['f_31'] = gbm2.predict(X_valid_na.drop(['f_30'], axis=1))
-X_test_na['f_31'] = gbm2.predict(X_test_na.drop(['f_30'], axis=1))
+train_na['f_31'] = gbm2.predict(X_train_na)
+valid_na['f_31'] = gbm2.predict(X_valid_na)
+test_na['f_31'] = gbm2.predict(X_test_na)
 
 cnt_na = np.sum(train_data.isna())
 cols = cnt_na[cnt_na != 0].index
@@ -88,13 +91,13 @@ for c in cols:
     else:
         fillna_dict[c] = np.mean(train_data[c])
 
-fill_train = X_train_na[['f_30', 'f_31']]
-fill_valid = X_valid_na[['f_30', 'f_31']]
-fill_test = X_test_na[['f_30', 'f_31']]
+fill_train = train_na[['f_30', 'f_31']]
+fill_valid = valid_na[['f_30', 'f_31']]
+fill_test = test_na[['f_30', 'f_31']]
 
-test_data = test_data.fillna(fill_test)
-valid_data = valid_data.fillna(fill_valid)
-train_data = train_data.fillna(fill_train)
+test_data.loc[test_data['f_30'].isna(), ['f_30', 'f_31']] = fill_test
+valid_data.loc[valid_data['f_30'].isna(), ['f_30', 'f_31']] = fill_valid
+train_data.loc[train_data['f_30'].isna(), ['f_30', 'f_31']] = fill_train
 
 train_data = train_data.fillna(fillna_dict)
 valid_data = valid_data.fillna(fillna_dict)
