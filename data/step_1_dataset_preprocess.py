@@ -51,9 +51,10 @@ train_not_na = train_data[~train_data['f_30'].isna()]
 X_train = train_not_na.drop(['f_30', 'f_31'], axis=1)
 y_train = train_not_na[['f_30', 'f_31']]
 
-X_train_na = train_na.drop(['is_clicked', 'is_installed'], axis=1)
-X_valid_na = valid_na.drop(['is_clicked', 'is_installed'], axis=1)
-X_test_na = test_na.drop(['is_clicked', 'is_installed'], axis=1)
+# Remove the drop operation for these columns as they don't exist anymore
+X_train_na = train_na
+X_valid_na = valid_na
+X_test_na = test_na
 
 gbm1 = lgb.LGBMClassifier(objective='binary',
                           metric='auc',
@@ -87,19 +88,13 @@ for c in cols:
     else:
         fillna_dict[c] = np.mean(train_data[c])
 
-if 'f_30' in X_train_na.columns and 'f_31' in X_train_na.columns:
-    fill_train = X_train_na[['f_30', 'f_31']]
-    fill_valid = X_valid_na[['f_30', 'f_31']]
-    fill_test = X_test_na[['f_30', 'f_31']]
-else:
-    fill_train = pd.DataFrame()
-    fill_valid = pd.DataFrame()
-    fill_test = pd.DataFrame()
+fill_train = X_train_na[['f_30', 'f_31']]
+fill_valid = X_valid_na[['f_30', 'f_31']]
+fill_test = X_test_na[['f_30', 'f_31']]
 
-if 'f_30' in test_data.columns and 'f_31' in test_data.columns:
-    test_data = test_data.fillna(fill_test)
-    valid_data = valid_data.fillna(fill_valid)
-    train_data = train_data.fillna(fill_train)
+test_data = test_data.fillna(fill_test)
+valid_data = valid_data.fillna(fill_valid)
+train_data = train_data.fillna(fill_train)
 
 train_data = train_data.fillna(fillna_dict)
 valid_data = valid_data.fillna(fillna_dict)
