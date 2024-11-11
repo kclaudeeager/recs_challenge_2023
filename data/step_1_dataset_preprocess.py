@@ -103,12 +103,15 @@ test_data[dense_feature] = mms.transform(test_data[dense_feature])
 # Combine training and validation data for final DataFrame
 train_data_full = pd.concat([train_data, valid_data], axis=0).reset_index(drop=True)
 
-# Save data
-dataset_name = '/kaggle/working/recs_challenge_2023/data/final'
-if not os.path.exists(dataset_name):
-    os.mkdir(dataset_name)
 
-train_data.to_csv(f'./{dataset_name}/train_data_{dataset_name}.csv', index=None)
-test_data.to_csv(f'./{dataset_name}/test_data_{dataset_name}.csv', index=None)
-valid_data.to_csv(f'./{dataset_name}/valid_data_{dataset_name}.csv', index=None)
-train_data_full.to_csv(f'./{dataset_name}/train_data_{dataset_name}_full.csv', index=None)
+# Define the dataset directory
+dataset_name = '/kaggle/working/recs_challenge_2023/data/final'
+
+# Create the directory if it doesn't exist
+os.makedirs(dataset_name, exist_ok=True)
+
+# Save data
+train_data.to_csv(f'{dataset_name}/train_data.csv', index=None)
+test_data.to_csv(f'{dataset_name}/test_data.csv', index=None)
+valid_data.to_csv(f'{dataset_name}/valid_data.csv', index=None)
+train_data_full.to_csv(f'{dataset_name}/train_data_full.csv', index=None)
