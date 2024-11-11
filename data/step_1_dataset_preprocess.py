@@ -20,12 +20,16 @@ train_data = pd.concat(dfTrain, axis=0)
 train_data = train_data.reset_index(drop=True)
 
 test_size = 0.2
-features = train_data.drop(['is_clicked', 'is_installed'], axis=1)
+
+# Access target columns before dropping them
 target = train_data['is_installed']
+target2 = train_data['is_clicked']
+
+features = train_data.drop(['is_clicked', 'is_installed'], axis=1)
+
 train_data, test_data, train_labels, test_labels = train_test_split(features, target, test_size=test_size)
 #_____________________________________
-                                                                    
-target2 = train_data['is_clicked']
+
 train_data2, test_data2, train_labels2, test_labels2 = train_test_split(features, target2, test_size=test_size)
 
 print("Data Loaded")
