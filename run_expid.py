@@ -27,9 +27,14 @@ base_dir = os.path.dirname(os.path.realpath(__file__))
 
 # Define data paths based on base_dir
 data_root = os.path.join(base_dir, 'data', 'final')
+
+# print available data files
+print("Available Data Files:", os.listdir(data_root))
+
 train_data_path = os.path.join(data_root, 'train_data_final.csv')
 valid_data_path = os.path.join(data_root, 'valid_data_final.csv')
 test_data_path = os.path.join(data_root, 'test_data_final.csv')
+
 
 # Check if data files exist before proceeding
 if not all(os.path.exists(f) for f in [train_data_path, valid_data_path, test_data_path]):
