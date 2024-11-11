@@ -1,9 +1,8 @@
 import numpy as np 
 import pandas as pd 
 import os 
-from sklearn.preprocessing import MinMaxScaler, StandardScaler
+from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
-import pickle
 import lightgbm as lgb
 
 # Load the dataset
@@ -66,6 +65,8 @@ gbm1 = lgb.LGBMClassifier(objective='binary',
                           max_depth=3,
                           num_leaves=7, verbose=3)
 gbm1.fit(X_train, y_train.f_30)
+
+# Fill NaN values in f_30 using predictions
 train_data.loc[train_data['f_30'].isna(), 'f_30'] = gbm1.predict(X_train_na)
 valid_data.loc[valid_data['f_30'].isna(), 'f_30'] = gbm1.predict(X_valid_na)
 test_data.loc[test_data['f_30'].isna(), 'f_30'] = gbm1.predict(X_test_na)
@@ -78,46 +79,36 @@ gbm2 = lgb.LGBMClassifier(objective='binary',
                           num_leaves=7, verbose=3)
 gbm2.fit(X_train, y_train.f_31)
 
+# Fill NaN values in f_31 using predictions
 train_data.loc[train_data['f_31'].isna(), 'f_31'] = gbm2.predict(X_train_na)
 valid_data.loc[valid_data['f_31'].isna(), 'f_31'] = gbm2.predict(X_valid_na)
 test_data.loc[test_data['f_31'].isna(), 'f_31'] = gbm2.predict(X_test_na)
 
 cnt_na = np.sum(train_data.isna())
 cols = cnt_na[cnt_na != 0].index
-fillna_dict = dict()
-for c in cols:
-    if c in ['f_30', 'f_31']:
-        continue
-    else:
-        fillna_dict[c] = np.mean(train_data[c])
+fillna_dict = {c: np.mean(train_data[c]) for c in cols if c not in ['f_30', 'f_31']}
 
-fill_train = train_na[['f_30', 'f_31']]
-fill_valid = valid_na[['f_30', 'f_31']]
-fill_test = test_na[['f_30', 'f_31']]
+# Fill remaining NaN values using fillna_dict for other columns
+train_data.fillna(fillna_dict, inplace=True)
+valid_data.fillna(fillna_dict, inplace=True)
+test_data.fillna(fillna_dict, inplace=True)
 
-test_data.loc[test_data['f_30'].isna(), ['f_30', 'f_31']] = fill_test
-valid_data.loc[valid_data['f_30'].isna(), ['f_30', 'f_31']] = fill_valid
-train_data.loc[train_data['f_30'].isna(), ['f_30', 'f_31']] = fill_train
-
-train_data = train_data.fillna(fillna_dict)
-valid_data = valid_data.fillna(fillna_dict)
-test_data = test_data.fillna(fillna_dict)
-
+# Scale features
 mms = MinMaxScaler(feature_range=(0, 1))
-dense_feature = []
-for i in range(42, 80):
-    dense_feature.append('f_{}'.format(i))
+dense_feature = ['f_' + str(i) for i in range(42, 80)]
 train_data[dense_feature] = mms.fit_transform(train_data[dense_feature])
 valid_data[dense_feature] = mms.transform(valid_data[dense_feature])
 test_data[dense_feature] = mms.transform(test_data[dense_feature])
 
+# Combine training and validation data for final DataFrame
 train_data_full = pd.concat([train_data, valid_data], axis=0).reset_index(drop=True)
 
 # Save data
 dataset_name = 'final'
-if not os.path.exists("{}".format(dataset_name)):
-    os.mkdir("{}".format(dataset_name))
-train_data.to_csv('./{}/train_data_{}.csv'.format(dataset_name, dataset_name), index=None)
-test_data.to_csv('./{}/test_data_{}.csv'.format(dataset_name, dataset_name), index=None)
-valid_data.to_csv('./{}/valid_data_{}.csv'.format(dataset_name, dataset_name), index=None)
-train_data_full.to_csv('./{}/train_data_{}_full.csv'.format(dataset_name, dataset_name), index=None)
+if not os.path.exists(dataset_name):
+    os.mkdir(dataset_name)
+
+train_data.to_csv(f'./{dataset_name}/train_data_{dataset_name}.csv', index=None)
+test_data.to_csv(f'./{dataset_name}/test_data_{dataset_name}.csv', index=None)
+valid_data.to_csv(f'./{dataset_name}/valid_data_{dataset_name}.csv', index=None)
+train_data_full.to_csv(f'./{dataset_name}/train_data_{dataset_name}_full.csv', index=None)
