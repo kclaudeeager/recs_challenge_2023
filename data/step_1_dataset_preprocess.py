@@ -66,9 +66,9 @@ gbm1 = lgb.LGBMClassifier(objective='binary',
                           max_depth=3,
                           num_leaves=7, verbose=3)
 gbm1.fit(X_train, y_train.f_30)
-train_na['f_30'] = gbm1.predict(X_train_na)
-valid_na['f_30'] = gbm1.predict(X_valid_na)
-test_na['f_30'] = gbm1.predict(X_test_na)
+train_data.loc[train_data['f_30'].isna(), 'f_30'] = gbm1.predict(X_train_na)
+valid_data.loc[valid_data['f_30'].isna(), 'f_30'] = gbm1.predict(X_valid_na)
+test_data.loc[test_data['f_30'].isna(), 'f_30'] = gbm1.predict(X_test_na)
 
 gbm2 = lgb.LGBMClassifier(objective='binary',
                           metric='auc',
@@ -78,9 +78,9 @@ gbm2 = lgb.LGBMClassifier(objective='binary',
                           num_leaves=7, verbose=3)
 gbm2.fit(X_train, y_train.f_31)
 
-train_na['f_31'] = gbm2.predict(X_train_na)
-valid_na['f_31'] = gbm2.predict(X_valid_na)
-test_na['f_31'] = gbm2.predict(X_test_na)
+train_data.loc[train_data['f_31'].isna(), 'f_31'] = gbm2.predict(X_train_na)
+valid_data.loc[valid_data['f_31'].isna(), 'f_31'] = gbm2.predict(X_valid_na)
+test_data.loc[test_data['f_31'].isna(), 'f_31'] = gbm2.predict(X_test_na)
 
 cnt_na = np.sum(train_data.isna())
 cols = cnt_na[cnt_na != 0].index
