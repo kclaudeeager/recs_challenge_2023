@@ -21,16 +21,11 @@ train_data = train_data.reset_index(drop=True)
 
 test_size = 0.2
 
-# Access target columns before dropping them
-target = train_data['is_installed']
-target2 = train_data['is_clicked']
-
+# Separate target variables
+target = train_data[['is_clicked', 'is_installed']]
 features = train_data.drop(['is_clicked', 'is_installed'], axis=1)
 
 train_data, test_data, train_labels, test_labels = train_test_split(features, target, test_size=test_size)
-#_____________________________________
-
-train_data2, test_data2, train_labels2, test_labels2 = train_test_split(features, target2, test_size=test_size)
 
 print("Data Loaded")
 
@@ -53,12 +48,12 @@ valid_na = valid_data[valid_data['f_30'].isna()]
 test_na = test_data[test_data['f_30'].isna()]
 
 train_not_na = train_data[~train_data['f_30'].isna()]
-X_train = train_not_na.drop(['is_clicked', 'is_installed', 'f_30', 'f_31'], axis=1)
+X_train = train_not_na.drop(['f_30', 'f_31'], axis=1)
 y_train = train_not_na[['f_30', 'f_31']]
 
-X_train_na = train_na.drop(['is_clicked', 'is_installed', 'f_30', 'f_31'], axis=1)
-X_valid_na = valid_na.drop(['is_clicked', 'is_installed', 'f_30', 'f_31'], axis=1)
-X_test_na = test_na.drop(['is_clicked', 'is_installed', 'f_30', 'f_31'], axis=1)
+X_train_na = train_na.drop(['is_clicked', 'is_installed'], axis=1)
+X_valid_na = valid_na.drop(['is_clicked', 'is_installed'], axis=1)
+X_test_na = test_na.drop(['is_clicked', 'is_installed'], axis=1)
 
 gbm1 = lgb.LGBMClassifier(objective='binary',
                           metric='auc',
@@ -92,13 +87,19 @@ for c in cols:
     else:
         fillna_dict[c] = np.mean(train_data[c])
 
-fill_train = X_train_na[['f_30', 'f_31']]
-fill_valid = X_valid_na[['f_30', 'f_31']]
-fill_test = X_test_na[['f_30', 'f_31']]
+if 'f_30' in X_train_na.columns and 'f_31' in X_train_na.columns:
+    fill_train = X_train_na[['f_30', 'f_31']]
+    fill_valid = X_valid_na[['f_30', 'f_31']]
+    fill_test = X_test_na[['f_30', 'f_31']]
+else:
+    fill_train = pd.DataFrame()
+    fill_valid = pd.DataFrame()
+    fill_test = pd.DataFrame()
 
-test_data = test_data.fillna(fill_test)
-valid_data = valid_data.fillna(fill_valid)
-train_data = train_data.fillna(fill_train)
+if 'f_30' in test_data.columns and 'f_31' in test_data.columns:
+    test_data = test_data.fillna(fill_test)
+    valid_data = valid_data.fillna(fill_valid)
+    train_data = train_data.fillna(fill_train)
 
 train_data = train_data.fillna(fillna_dict)
 valid_data = valid_data.fillna(fillna_dict)
