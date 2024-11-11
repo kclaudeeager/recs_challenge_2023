@@ -1,9 +1,9 @@
 sharechatx1:
-    data_root: data/final/
+    data_root: /kaggle/working/recs_challenge_2023/data/final/
     data_format: csv
-    train_data: data/final/train_data_final.csv
-    valid_data: data/final/valid_data_final.csv
-    test_data: data/final/test_data_final.csv
+    train_data: /kaggle/working/recs_challenge_2023/data/final/train_data_final.csv
+    valid_data: /kaggle/working/recs_challenge_2023/data/final/valid_data_final.csv
+    test_data: /kaggle/working/recs_challenge_2023/data/final/test_data_final.csv
     min_categr_count: 3
     feature_cols:
         [{ name: [ f_2,f_3,f_4,f_5,f_6,f_7,f_8,f_9,f_10,f_11,f_12,f_13,f_14,f_15,f_16,f_17,
@@ -20,9 +20,9 @@ sharechatx1:
 sharechatx2:
     data_root: data/final/
     data_format: csv
-    train_data: data/final/train_data_final.csv
-    valid_data: data/final/valid_data_final.csv
-    test_data: data/final/test_data_final.csv
+    train_data: /kaggle/working/recs_challenge_2023/data/final/train_data_final.csv
+    valid_data: /kaggle/working/recs_challenge_2023/data/final/valid_data_final.csv
+    test_data: /kaggle/working/recs_challenge_2023/data/final/test_data_final.csv
     min_categr_count: 3
     feature_cols:
         [{ name: [ f_2,f_3,f_4,f_5,f_6,f_8,f_10,f_11,f_12,f_13,f_14,f_15,f_16,f_17,
@@ -40,9 +40,9 @@ sharechatx2:
 sharechatx3:
     data_root: data/final/
     data_format: csv
-    train_data: data/final/train_data_final_full.csv
-    valid_data: data/final/valid_data_final.csv
-    test_data: data/final/test_data_final.csv
+    train_data: /kaggle/working/recs_challenge_2023/data/final/train_data_final_full.csv
+    valid_data: /kaggle/working/recs_challenge_2023/data/final/valid_data_final.csv
+    test_data: /kaggle/working/recs_challenge_2023/data/final/test_data_final.csv
     min_categr_count: 3
     feature_cols:
         [{ name: [ f_2,f_3,f_4,f_5,f_6,f_8,f_10,f_11,f_12,f_13,f_14,f_15,f_16,f_17,
