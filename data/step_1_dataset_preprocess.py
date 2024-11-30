@@ -27,6 +27,7 @@ features = train_data.drop(['is_clicked', 'is_installed'], axis=1)
 train_data, test_data, train_labels, test_labels = train_test_split(features, target, test_size=test_size)
 
 print("Data Loaded")
+print("Initial columns in train_data:", train_data.columns)
 
 # Preprocess the data
 test_data['is_clicked'] = -1
@@ -50,6 +51,7 @@ train_not_na = train_data[~train_data['f_30'].isna()]
 
 # Define features to use for training (excluding 'f_30' and 'f_31')
 feature_columns = [col for col in train_data.columns if col not in ['f_30', 'f_31']]
+print("Feature columns:", feature_columns)
 
 X_train = train_not_na[feature_columns]
 y_train = train_not_na[['f_30', 'f_31']]
@@ -103,6 +105,7 @@ test_data[dense_feature] = mms.transform(test_data[dense_feature])
 # Combine training and validation data for final DataFrame
 train_data_full = pd.concat([train_data, valid_data], axis=0).reset_index(drop=True)
 
+print("Final columns in train_data_full:", train_data_full.columns)
 
 # Define the dataset directory
 dir_name = '/kaggle/working/recs_challenge_2023/data/final'
@@ -115,4 +118,3 @@ train_data.to_csv(f'{dir_name}/train_data_{dataset_name}.csv', index=None)
 test_data.to_csv(f'{dir_name}/test_data_{dataset_name}.csv', index=None)
 valid_data.to_csv(f'{dir_name}/valid_data_{dataset_name}.csv', index=None)
 train_data_full.to_csv(f'{dir_name}/train_data_{dataset_name}_full.csv', index=None)
-
