@@ -70,7 +70,7 @@ if __name__ == '__main__':
     # create submission path 
     if not os.path.exists('./submission'):
         os.mkdir('./submission')
-    submission_csv = pd.read_csv('./data/raw_data/sharechat_recsys2023_data/test/000000000000.csv',sep='\t')
+    submission_csv = pd.read_csv('/kaggle/input/test-recsys-challenge-2023/000000000000.csv',sep='\t')
     submission_data = pd.DataFrame()
     submission_data['RowId'] = submission_csv['f_0']
 
